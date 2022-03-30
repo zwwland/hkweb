@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=1, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <audio id="aud" controls src=""></audio>
+    <button onclick="start()">start</button>
+    <button onclick="stop()">stop</button>
+    <script>
+      var mediaRecorder;
+      var chrunks = [];
+      var mime = "audio/webm;codecs=acc";
+      function start() {
+        mediaRecorder.start();
+      }
+      function stop() {
+        mediaRecorder.stop();
+      }
+      if (navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices
+          .getUserMedia({
+            audio: true,
+            video: false,
+            mimeType: mime,
+          })
+          .then(
+            (stream) => {
+              mediaRecorder = new MediaRecorder(stream, {
+                videoBitsPerSecond: 32 * 8000
+              });
+              mediaRecorder.onstop = (e) => {
+                const blob = new Blob(chrunks, { type: mime });
+                const audioURL = URL.createObjectURL(blob);
+                console.log(blob,stream,mediaRecorder);
+                document.querySelector("#aud").src = audioURL;
+                // document.querySelector("#aud").play();
+                const a = document.createElement('a')
+                a.download = "audio.webm";
+                a.style.display = 'none';
+                a.href = audioURL
+                a.target = '_blank'
+                a.click()
+                document.body.removeChild(a)
+              };
+              mediaRecorder.ondataavailable = (e) => {
+                chrunks.push(e.data);
+              };
+            },
+            (err) => {
+              console.log(err);
+            }
+          );
+      } else {
+        alert("当前浏览器不支持录音功能，请更换浏览器");
+      }
+    </script>
+  </body>
+</html>

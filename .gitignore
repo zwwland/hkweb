@@ -1,0 +1,15 @@
+
+#editor
+/.vscode
+/.idea
+
+#large files 
+/lib/linux64/*
+/lib/win64/*
+/audio/*
+/hkweb/*
+
+#pakage 
+/vendor
+
+!.gitkeep
